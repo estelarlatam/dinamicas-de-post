@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Eventos - Estelar Latam</title>
+    <title>Dinámicas - Estelar Latam</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -452,36 +452,36 @@
 
             <!-- Tab Content: En curso -->
             <div id="current" class="content-section active">
-                <h2 class="section-title">Eventos que estoy inscrito</h2>
+                <h2 class="section-title">Dinámicas que estoy inscrito</h2>
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
-                    <p>Sin eventos en curso</p>
+                    <p>Sin Dinámicas en curso</p>
                 </div>
 
-                <h2 class="section-title">Eventos Elegibles para Participar</h2>
+                <h2 class="section-title">Dinámicas Elegibles para Participar</h2>
                 <div class="events-grid" id="currentEvents">
-                    <!-- Eventos se cargarán dinámicamente -->
+                    <!-- Dinámicas se cargarán dinámicamente -->
                 </div>
             </div>
 
             <!-- Tab Content: Próximos -->
             <div id="upcoming" class="content-section">
-                <h2 class="section-title">Eventos Preinscrito</h2>
+                <h2 class="section-title">Dinámicas Preinscrito</h2>
                 <div class="empty-state">
                     <div class="empty-icon">📅</div>
-                    <p>Sin eventos programados</p>
+                    <p>Sin Dinámicas programados</p>
                 </div>
 
-                <h2 class="section-title">Eventos Elegibles para Preinscripción</h2>
+                <h2 class="section-title">Dinámicas Elegibles para Preinscripción</h2>
                 <div class="events-grid" id="upcomingEvents">
-                    <!-- Eventos se cargarán dinámicamente -->
+                    <!-- Dinámicas se cargarán dinámicamente -->
                 </div>
             </div>
 
             <!-- Tab Content: Terminado -->
             <div id="ended" class="content-section">
                 <div class="events-grid" id="endedEvents" style="margin-top: 20px;">
-                    <!-- Eventos se cargarán dinámicamente -->
+                    <!-- Dinámicas se cargarán dinámicamente -->
                 </div>
             </div>
         </div>
@@ -570,7 +570,7 @@
 
         // Buscar evento por ID (título normalizado)
         function findEventById(id) {
-            // Buscar en todos los eventos cargados
+            // Buscar en todos los Dinámicas cargados
             const allEvents = [...eventsData.current, ...eventsData.upcoming, ...eventsData.ended];
             return allEvents.find(e => normalizeId(e.titulo) === id);
         }
@@ -580,14 +580,14 @@
             return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
         }
 
-        // Variable global para almacenar eventos clasificados
+        // Variable global para almacenar Dinámicas clasificados
         let eventsData = {
             current: [],
             upcoming: [],
             ended: []
         };
 
-        // Función para cargar eventos desde JSON
+        // Función para cargar Dinámicas desde JSON
         async function loadEvents() {
             // Mostrar loading
             document.getElementById('loadingState').style.display = 'flex';
@@ -649,7 +649,7 @@
                 eventsData[state].push(event);
             });
 
-            console.log('Eventos clasificados:', {
+            console.log('Dinámicas clasificados:', {
                 current: eventsData.current.length,
                 upcoming: eventsData.upcoming.length,
                 ended: eventsData.ended.length
@@ -722,7 +722,7 @@
             // Renderizar En curso
             const currentContainer = document.getElementById('currentEvents');
             if (eventsData.current.length === 0) {
-                currentContainer.innerHTML = '<div class="empty-state"><p>No hay eventos disponibles</p></div>';
+                currentContainer.innerHTML = '<div class="empty-state"><p>No hay Dinámicas disponibles</p></div>';
             } else {
                 eventsData.current.forEach(event => {
                     currentContainer.appendChild(createEventCard(event));
@@ -732,7 +732,7 @@
             // Renderizar Próximos
             const upcomingContainer = document.getElementById('upcomingEvents');
             if (eventsData.upcoming.length === 0) {
-                upcomingContainer.innerHTML = '<div class="empty-state"><p>No hay eventos programados</p></div>';
+                upcomingContainer.innerHTML = '<div class="empty-state"><p>No hay Dinámicas programados</p></div>';
             } else {
                 eventsData.upcoming.forEach(event => {
                     upcomingContainer.appendChild(createEventCard(event));
@@ -742,7 +742,7 @@
             // Renderizar Terminados
             const endedContainer = document.getElementById('endedEvents');
             if (eventsData.ended.length === 0) {
-                endedContainer.innerHTML = '<div class="empty-state" style="margin-top: 20px;"><p>No hay eventos finalizados</p></div>';
+                endedContainer.innerHTML = '<div class="empty-state" style="margin-top: 20px;"><p>No hay Dinámicas finalizados</p></div>';
             } else {
                 eventsData.ended.forEach(event => {
                     endedContainer.appendChild(createEventCard(event));
@@ -793,7 +793,7 @@
             document.getElementById(tabName).classList.add('active');
         }
 
-        // Cargar eventos al iniciar
+        // Cargar Dinámicas al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             loadEvents();
         });
