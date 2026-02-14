@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eventos - Estelar Latam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #f0f0f0;
+            transform: translateX(-3px);
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: #333;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            color: #636e72;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-container {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ff6b6b;
+        }
+
+        .error-container button {
+            margin-top: 16px;
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 72px;
+            z-index: 99;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            padding: 0 10px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 8px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            font-weight: 600;
+            color: #b2bec3;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            border: none;
+            background: transparent;
+        }
+
+        .tab.active {
+            color: #2d3436;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            border-radius: 3px 3px 0 0;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* Filter Dropdown */
+        .filter-section {
+            padding: 16px 20px;
+            background: white;
+            margin-bottom: 8px;
+        }
+
+        .dropdown {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #636e72;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .dropdown:hover {
+            border-color: #dfe6e9;
+            background: white;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+            padding-bottom: 100px;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            padding: 20px 20px 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #b2bec3;
+            font-size: 15px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Event Cards */
+        .events-grid {
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            text-decoration: none;
+            display: block;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .event-card:active {
+            transform: scale(0.98);
+        }
+
+        /* CONTENEDOR DEL BANNER - RESPONSIVE */
+        .event-banner-container {
+            width: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            aspect-ratio: 3 / 1;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        @supports not (aspect-ratio: 3 / 1) {
+            .event-banner-container {
+                height: 140px;
+            }
+        }
+
+        .event-banner {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            transition: transform 0.3s ease;
+            background-color: #f0f0f0;
+        }
+
+        .event-card:hover .event-banner {
+            transform: scale(1.02);
+        }
+
+        /* Loading state */
+        .event-banner-container.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Error state */
+        .image-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+            background: #ff6b6b;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .event-info {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .event-stats {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #636e72;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .event-stats svg {
+            width: 16px;
+            height: 16px;
+            fill: #636e72;
+        }
+
+        .event-time {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .event-time.ended {
+            color: #636e72;
+        }
+
+        .event-time.finished {
+            color: #00b894;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .app-container {
+                max-width: 100%;
+            }
+            
+            .event-banner-container {
+                aspect-ratio: 16 / 9;
+                min-height: 160px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .event-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Touch feedback */
+        .event-card {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <button class="back-btn" onclick="history.back()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <h1>Eventos</h1>
+        </header>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Cargando eventos...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-container" style="display: none;">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <h3>Error al cargar eventos</h3>
+            <p>No se pudieron cargar los eventos. Verifica tu conexión.</p>
+            <button onclick="loadEvents()">Reintentar</button>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('current', this)">En curso</button>
+                    <button class="tab" onclick="switchTab('upcoming', this)">próximos</button>
+                    <button class="tab" onclick="switchTab('ended', this)">Terminado</button>
+                </div>
+            </div>
+
+            <!-- Filter -->
+            <div class="filter-section">
+                <div class="dropdown">
+                    <span>Todos los Eventos</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tab Content: En curso -->
+            <div id="current" class="content-section active">
+                <h2 class="section-title">Eventos que estoy inscrito</h2>
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>Sin eventos en curso</p>
+                </div>
+
+                <h2 class="section-title">Eventos Elegibles para Participar</h2>
+                <div class="events-grid" id="currentEvents">
+                    <!-- Eventos se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Próximos -->
+            <div id="upcoming" class="content-section">
+                <h2 class="section-title">Eventos Preinscrito</h2>
+                <div class="empty-state">
+                    <div class="empty-icon">📅</div>
+                    <p>Sin eventos programados</p>
+                </div>
+
+                <h2 class="section-title">Eventos Elegibles para Preinscripción</h2>
+                <div class="events-grid" id="upcomingEvents">
+                    <!-- Eventos se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Tab Content: Terminado -->
+            <div id="ended" class="content-section">
+                <div class="events-grid" id="endedEvents" style="margin-top: 20px;">
+                    <!-- Eventos se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL del JSON de eventos
+        const JSON_URL = 'https://raw.githubusercontent.com/estelarlatam/eventos/main/lista-de-eventos.json';
+        
+        // Almacenar referencias a los elementos del contador
+        const countdownElements = new Map();
+        let countdownInterval = null;
+
+        // Función para determinar el estado del evento basado en fechas
+        function determineEventState(event) {
+            // Si el campo estado está presente y es válido, usarlo
+            if (event.estado) {
+                const estado = event.estado.toLowerCase().trim();
+                if (estado === 'en curso') return 'current';
+                if (estado === 'proximos' || estado === 'próximos') return 'upcoming';
+                if (estado === 'terminado') return 'ended';
+            }
+
+            // Si no hay estado o es inválido, calcular por fechas
+            const now = new Date();
+            const startDate = new Date(event.fecha_inicio);
+            const endDate = new Date(event.fecha_fin);
+
+            if (now < startDate) {
+                return 'upcoming'; // Aún no comienza
+            } else if (now >= startDate && now <= endDate) {
+                return 'current'; // En curso
+            } else {
+                return 'ended'; // Finalizado
+            }
+        }
+
+        // Función para calcular tiempo restante
+        function calculateTimeRemaining(endDate) {
+            const now = Date.now();
+            const end = new Date(endDate).getTime();
+            const difference = end - now;
+
+            if (difference <= 0) {
+                return null;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            return { days, hours, minutes, seconds };
+        }
+
+        // Función para formatear el contador
+        function formatCountdown(time) {
+            if (!time) return '¡Finalizado!';
+            
+            const { days, hours, minutes, seconds } = time;
+            
+            if (days > 0) {
+                return `Termina en ${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            } else {
+                return `Termina en ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+            }
+        }
+
+        // Función para actualizar todos los contadores
+        function updateAllCountdowns() {
+            countdownElements.forEach((element, eventId) => {
+                const event = findEventById(eventId);
+                if (!event) return;
+
+                const timeRemaining = calculateTimeRemaining(event.fecha_fin);
+                const timeString = formatCountdown(timeRemaining);
+                
+                element.textContent = timeString;
+                
+                if (!timeRemaining) {
+                    element.classList.add('finished');
+                    element.classList.remove('ended');
+                }
+            });
+        }
+
+        // Buscar evento por ID (título normalizado)
+        function findEventById(id) {
+            // Buscar en todos los eventos cargados
+            const allEvents = [...eventsData.current, ...eventsData.upcoming, ...eventsData.ended];
+            return allEvents.find(e => normalizeId(e.titulo) === id);
+        }
+
+        // Normalizar ID (crear slug único)
+        function normalizeId(title) {
+            return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+        }
+
+        // Variable global para almacenar eventos clasificados
+        let eventsData = {
+            current: [],
+            upcoming: [],
+            ended: []
+        };
+
+        // Función para cargar eventos desde JSON
+        async function loadEvents() {
+            // Mostrar loading
+            document.getElementById('loadingState').style.display = 'flex';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+
+            try {
+                // Agregar timestamp para evitar caché
+                const url = `${JSON_URL}?t=${Date.now()}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const events = await response.json();
+                
+                // Validar que sea un array
+                if (!Array.isArray(events)) {
+                    throw new Error('El JSON no contiene un array de eventos');
+                }
+
+                // Clasificar eventos
+                classifyEvents(events);
+                
+                // Renderizar eventos
+                renderAllEvents();
+                
+                // Mostrar contenido principal
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Iniciar contadores
+                startCountdowns();
+                
+            } catch (error) {
+                console.error('Error cargando eventos:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'block';
+            }
+        }
+
+        // Función para clasificar eventos
+        function classifyEvents(events) {
+            // Limpiar datos anteriores
+            eventsData = {
+                current: [],
+                upcoming: [],
+                ended: []
+            };
+
+            events.forEach(event => {
+                const state = determineEventState(event);
+                
+                // Agregar ID único al evento
+                event.id = normalizeId(event.titulo);
+                
+                eventsData[state].push(event);
+            });
+
+            console.log('Eventos clasificados:', {
+                current: eventsData.current.length,
+                upcoming: eventsData.upcoming.length,
+                ended: eventsData.ended.length
+            });
+        }
+
+        // Función para crear tarjeta de evento
+        function createEventCard(event) {
+            const timeClass = determineEventState(event) === 'ended' ? 'ended' : '';
+            
+            const card = document.createElement('a');
+            card.className = 'event-card';
+            card.href = event.link;
+            card.target = '_blank';
+            card.rel = 'noopener noreferrer';
+            card.dataset.eventId = event.id;
+            
+            // Calcular tiempo inicial
+            const initialTime = calculateTimeRemaining(event.fecha_fin);
+            const initialTimeString = formatCountdown(initialTime);
+            
+            card.innerHTML = `
+                <div class="event-banner-container loading">
+                    <img 
+                        src="${event.imagen}" 
+                        alt="${event.titulo}" 
+                        class="event-banner"
+                        onload="this.parentElement.classList.remove('loading')"
+                        onerror="handleImageError(this, '${event.titulo}')"
+                        loading="lazy"
+                    >
+                </div>
+                <div class="event-info">
+                    <div class="event-stats">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <span>${event.participantes || 0}</span>
+                    </div>
+                    <div class="event-time ${timeClass}" data-countdown="${event.id}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                        </svg>
+                        <span class="countdown-text">${initialTimeString}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Guardar referencia al elemento del contador
+            const countdownElement = card.querySelector('.countdown-text');
+            countdownElements.set(event.id, countdownElement);
+            
+            // Prevenir comportamiento por defecto
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.open(event.link, '_blank');
+            });
+            
+            return card;
+        }
+
+        // Función para renderizar todos los eventos
+        function renderAllEvents() {
+            // Limpiar contenedores
+            document.getElementById('currentEvents').innerHTML = '';
+            document.getElementById('upcomingEvents').innerHTML = '';
+            document.getElementById('endedEvents').innerHTML = '';
+            
+            // Limpiar referencias de contadores
+            countdownElements.clear();
+            
+            // Renderizar En curso
+            const currentContainer = document.getElementById('currentEvents');
+            if (eventsData.current.length === 0) {
+                currentContainer.innerHTML = '<div class="empty-state"><p>No hay eventos disponibles</p></div>';
+            } else {
+                eventsData.current.forEach(event => {
+                    currentContainer.appendChild(createEventCard(event));
+                });
+            }
+            
+            // Renderizar Próximos
+            const upcomingContainer = document.getElementById('upcomingEvents');
+            if (eventsData.upcoming.length === 0) {
+                upcomingContainer.innerHTML = '<div class="empty-state"><p>No hay eventos programados</p></div>';
+            } else {
+                eventsData.upcoming.forEach(event => {
+                    upcomingContainer.appendChild(createEventCard(event));
+                });
+            }
+            
+            // Renderizar Terminados
+            const endedContainer = document.getElementById('endedEvents');
+            if (eventsData.ended.length === 0) {
+                endedContainer.innerHTML = '<div class="empty-state" style="margin-top: 20px;"><p>No hay eventos finalizados</p></div>';
+            } else {
+                eventsData.ended.forEach(event => {
+                    endedContainer.appendChild(createEventCard(event));
+                });
+            }
+        }
+
+        // Manejador de errores de imagen
+        function handleImageError(img, title) {
+            console.error('Error cargando imagen:', img.src);
+            const container = img.parentElement;
+            container.classList.remove('loading');
+            container.innerHTML = `
+                <div class="image-error">
+                    <div>
+                        <div style="font-size: 24px; margin-bottom: 5px;">🖼️</div>
+                        <div>Imagen no disponible</div>
+                        <div style="font-size: 11px; margin-top: 5px; opacity: 0.8;">${title}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Iniciar contadores
+        function startCountdowns() {
+            // Limpiar intervalo anterior si existe
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            // Actualizar inmediatamente
+            updateAllCountdowns();
+            
+            // Actualizar cada segundo
+            countdownInterval = setInterval(updateAllCountdowns, 1000);
+        }
+
+        // Tab Switching
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Cargar eventos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEvents();
+        });
+
+        // Recargar al volver a la página (para datos actualizados)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // Opcional: recargar automáticamente al volver
+                // loadEvents();
+            }
+        });
+
+        // Touch feedback
+        document.addEventListener('touchstart', function() {}, {passive: true});
+    </script>
+</body>
+</html>
