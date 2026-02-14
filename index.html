@@ -469,7 +469,7 @@
                 <h2 class="section-title">Dinámicas Preinscrito</h2>
                 <div class="empty-state">
                     <div class="empty-icon">📅</div>
-                    <p>Sin Dinámicas programados</p>
+                    <p>Sin Dinámicas programadas</p>
                 </div>
 
                 <h2 class="section-title">Dinámicas Elegibles para Preinscripción</h2>
@@ -732,7 +732,7 @@
             // Renderizar Próximos
             const upcomingContainer = document.getElementById('upcomingEvents');
             if (eventsData.upcoming.length === 0) {
-                upcomingContainer.innerHTML = '<div class="empty-state"><p>No hay Dinámicas programados</p></div>';
+                upcomingContainer.innerHTML = '<div class="empty-state"><p>No hay Dinámicas programadas</p></div>';
             } else {
                 eventsData.upcoming.forEach(event => {
                     upcomingContainer.appendChild(createEventCard(event));
